@@ -1,0 +1,33 @@
+# Render Blueprint — deploy the backend with zero manual dashboard setup.
+#
+# Usage:
+#   1. Push this repo to GitHub.
+#   2. In Render: New -> Blueprint -> select this repo -> Render reads this file.
+#   3. After the first deploy, open the service's Shell tab and run:
+#        python seed.py
+#      once, to create tables and load demo data.
+#
+# You still need a Postgres database (Render's free Postgres expires after 90
+# days — Neon's free tier is permanent and works just as well). Either way,
+# set DATABASE_URL as described below.
+
+services:
+  - type: web
+    name: vrukshasetu-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: CORS_ORIGINS
+        sync: false # set manually to your deployed frontend URL(s), comma-separated
+      - key: DATABASE_URL
+        sync: false # set manually to your Neon/Render Postgres connection string
