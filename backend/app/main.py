@@ -75,7 +75,10 @@ async def on_startup():
     # (A real production deployment should use Alembic migrations instead.)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    logger.info(f"VrukshaSetu API started | environment={settings.ENVIRONMENT} | db={settings.DATABASE_URL.split('://')[0]}")
+    logger.info(
+    f"VrukshaSetu API started | environment={settings.ENVIRONMENT} "
+    f"| cors={settings.cors_origins_list}"
+)
 
 
 @app.get("/health")
